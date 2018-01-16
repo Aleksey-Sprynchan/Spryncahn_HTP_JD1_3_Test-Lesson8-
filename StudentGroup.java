@@ -170,9 +170,9 @@ public class StudentGroup implements GroupOperationService {
 			throw new IllegalArgumentException();
 
 		} else if (index == 0) {
-			for (int i = 0; i < this.students.length; i++) {
-				this.students[i] = null;
-			}
+			Student[] students = new Student[0];
+			this.students = students;
+
 		} else {
 
 			Student[] students = new Student[index];
@@ -204,20 +204,19 @@ public class StudentGroup implements GroupOperationService {
 	}
 
 	@Override
-	public void removeToIndex(int index) { // удаление, включая параметр
+	public void removeToIndex(int index) { // удаление,  НЕ включая параметр
 
 		if (index < 0 || index >= this.students.length) {
 			throw new IllegalArgumentException();
 
-		} else if (index == this.students.length - 1) {
+		} /*else if (index == this.students.length - 1) {
 			for (int i = 0; i < this.students.length; i++) {
 				this.students[i] = null;
 			}
-		} else {
-
-			Student[] students = new Student[this.students.length - index - 1];
+		}*/ else {
+			Student[] students = new Student[this.students.length - index /* -1 */ ];
 			for (int i = 0; i < students.length; i++) {
-				students[i] = this.students[i + index + 1];
+				students[i] = this.students[i + index /* + */];
 			}
 			this.students = students;
 
@@ -226,7 +225,7 @@ public class StudentGroup implements GroupOperationService {
 	}
 
 	@Override
-	public void removeToElement(Student student) { // удаление, включая параметр
+	public void removeToElement(Student student) { // удаление, НЕ включая параметр
 		if (student == null) {
 			throw new IllegalArgumentException();
 		} else {
@@ -314,7 +313,8 @@ public class StudentGroup implements GroupOperationService {
 				return students;
 
 			} else {
-				return null;
+				Student[] students = new Student[0];
+				return students;
 			}
 
 		}
@@ -323,7 +323,7 @@ public class StudentGroup implements GroupOperationService {
 
 	@Override
 	public Student[] getBetweenBirthDates(Date firstDate, Date lastDate) {
-		if (firstDate == null && lastDate == null) {
+		if (firstDate == null || lastDate == null) {
 			throw new IllegalArgumentException();
 		} else {
 			int count = 0;
@@ -348,7 +348,8 @@ public class StudentGroup implements GroupOperationService {
 				return students;
 
 			} else {
-				return null;
+				Student[] students = new Student[0];
+				return students;
 			}
 
 		}
@@ -390,7 +391,8 @@ public class StudentGroup implements GroupOperationService {
 				}
 				return students;
 			} else {
-				return null;
+				Student[] students = new Student[0];
+				return students;
 			}
 
 		}
@@ -399,25 +401,28 @@ public class StudentGroup implements GroupOperationService {
 
 	@Override
 	public int getCurrentAgeByDate(int indexOfStudent) {
-		Calendar c1 = Calendar.getInstance();
-		int j = 10000;
-		for (int i = 0; i < this.students.length; i++) {
-			if (this.students[i].getId() == indexOfStudent) {
-				j = i;
-
-			}
-		}
-		if (j == 10000) {
-			return 0;
+		if (indexOfStudent < 0) {
+			throw new IllegalArgumentException();
 		} else {
-			Calendar c2 = Calendar.getInstance();
-			c2.setTime(this.students[j].getBirthDate());
-			int age = c1.get(Calendar.YEAR) - c2.get(Calendar.YEAR);
-			int finalAge = c1.get(Calendar.DAY_OF_YEAR) - c2.get(Calendar.DAY_OF_YEAR);
-			if (finalAge >= 0) {
-				return age;
+			Calendar c1 = Calendar.getInstance();
+			int j = 10000;
+			for (int i = 0; i < this.students.length; i++) {
+				if (this.students[i].getId() == indexOfStudent) {
+					j = i;
+				}
 			}
-			return age - 1;
+			if (j == 10000) {
+				throw new IllegalArgumentException();
+			} else {
+				Calendar c2 = Calendar.getInstance();
+				c2.setTime(this.students[j].getBirthDate());
+				int age = c1.get(Calendar.YEAR) - c2.get(Calendar.YEAR);
+				int finalAge = c1.get(Calendar.DAY_OF_YEAR) - c2.get(Calendar.DAY_OF_YEAR);
+				if (finalAge >= 0) {
+					return age;
+				}
+				return age - 1;
+			}
 		}
 
 	}
@@ -445,7 +450,8 @@ public class StudentGroup implements GroupOperationService {
 				}
 				return students;
 			} else {
-				return null;
+				Student[] students = new Student[0];
+				return students;
 			}
 
 		}
@@ -481,18 +487,20 @@ public class StudentGroup implements GroupOperationService {
 
 	@Override
 	public Student getNextStudent(Student student) {
-		Student nextSt = new Student(0, null, null, 0);
+		Student nextSt = null;
 		if (student == null) {
 			throw new IllegalArgumentException();
 		} else {
 
-			for (int i = 0; i < this.students.length - 1; i++) {
+			for (int i = 0; i < this.students.length; i++) {
 				if (student == this.students[i]) {
-					nextSt = this.students[i + 1];
+					if (i != this.students.length - 1) {
+						nextSt = this.students[i + 1];
+					} else {
+						throw new IllegalArgumentException();
+					}
+
 				}
-			}
-			if (student == this.students[this.students.length - 1]) {
-				nextSt = null;
 			}
 		}
 
